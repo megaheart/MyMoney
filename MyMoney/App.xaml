@@ -1,0 +1,21 @@
+﻿<Application x:Class="MyMoney.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:MyMoney"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="Red" Color="#d64949"></SolidColorBrush>
+        <SolidColorBrush x:Key="LightRed" Color="#d95959"></SolidColorBrush>
+        <SolidColorBrush x:Key="DarkRed" Color="#d02f2f"></SolidColorBrush>
+        <SolidColorBrush x:Key="Blue" Color="#3f7dd9"></SolidColorBrush>
+        <SolidColorBrush x:Key="LightBlue" Color="#558bdd"></SolidColorBrush>
+        <SolidColorBrush x:Key="DarkBlue" Color="#FF014874"></SolidColorBrush>
+        <SolidColorBrush x:Key="Yellow" Color="#e8b600"></SolidColorBrush>
+        <SolidColorBrush x:Key="LightYellow" Color="#ffc800"></SolidColorBrush>
+        <SolidColorBrush x:Key="DarkYellow" Color="#cca000"></SolidColorBrush>
+        <SolidColorBrush x:Key="Green" Color="#2c902b"></SolidColorBrush>
+        <SolidColorBrush x:Key="LightGreen" Color="#319d2f"></SolidColorBrush>
+        <SolidColorBrush x:Key="DarkGreen" Color="#2b8929"></SolidColorBrush>
+        
+    </Application.Resources>
+</Application>
