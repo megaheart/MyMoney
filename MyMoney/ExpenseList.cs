@@ -30,5 +30,6 @@ namespace MyMoney
             }
             get => _createdDate;
         }
+        public int Id { set; get; }
     }
 }

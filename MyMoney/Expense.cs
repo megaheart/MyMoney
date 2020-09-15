@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace MyMoney
@@ -19,8 +20,8 @@ namespace MyMoney
             }
             get => _item;
         }
-        private string _price;
-        public string Price
+        private int _price;
+        public int Price
         {
             set
             {
@@ -45,5 +46,7 @@ namespace MyMoney
             }
             get => _time;
         }
+        public int ExpenseListId { set; get; }
+        public int Id { set; get; }
     }
 }

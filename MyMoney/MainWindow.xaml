@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MyMoney"
+        xmlns:local="clr-namespace:MyMoney" ResizeMode="CanResizeWithGrip"
         mc:Ignorable="d" UseLayoutRounding="True"
         Title="MainWindow" Height="450" Width="850">
     <Window.Resources>
@@ -16,7 +16,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ButtonBase">
-                        <Border CornerRadius="2" Padding="{TemplateBinding Padding}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" x:Name="border" BorderThickness="0" Background="{StaticResource Blue}">
+                        <Border CornerRadius="2" Padding="{TemplateBinding Padding}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Name="border" BorderThickness="0" Background="{StaticResource Blue}">
                             <Border.RenderTransform>
                                 <TranslateTransform x:Name="transform" Y="0"></TranslateTransform>
                             </Border.RenderTransform>
@@ -63,7 +63,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ButtonBase">
-                        <Border CornerRadius="2" Padding="{TemplateBinding Padding}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" x:Name="border" BorderThickness="0" Background="{StaticResource Red}">
+                        <Border CornerRadius="2" Padding="{TemplateBinding Padding}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Name="border" BorderThickness="0" Background="{StaticResource Red}">
                             <Border.RenderTransform>
                                 <TranslateTransform x:Name="transform" Y="0"></TranslateTransform>
                             </Border.RenderTransform>
@@ -103,7 +103,7 @@
         </Style>
         <ControlTemplate TargetType="TextBox" x:Key="TextBoxStyle">
             <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" x:Name="PART_ContentHost"></ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="PART_ContentHost"></ScrollViewer>
             </Border>
         </ControlTemplate>
         <local:IntToVNDCurrency x:Key="CurrencyConverter"></local:IntToVNDCurrency>
@@ -113,7 +113,7 @@
         <StackPanel Width="200" DockPanel.Dock="Left" Background="#FF2E2D2D">
             <Button Margin="38.2" Name="CreatingButton" Style="{StaticResource BlueButtonStyle}" Click="CreatingButton_Click">New List</Button>
             <StackPanel Name="CreatingPanel" Margin="0,20,0,10" Visibility="Collapsed">
-                <TextBox Margin="8,3" FontSize="14" Padding="8,3" Template="{StaticResource TextBoxStyle}">
+                <TextBox Name="NewExpenseListTitle" Margin="8,3" FontSize="14" Padding="8,3" Template="{StaticResource TextBoxStyle}">
                 </TextBox>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -124,7 +124,7 @@
                     <Button Margin="15,5" Style="{StaticResource RedButtonStyle}" Grid.Column="1" Click="CancelAddingNewExpenseList">Cancel</Button>
                 </Grid>
             </StackPanel>
-            <ListBox Background="#FF2E2D2D" BorderThickness="0" SelectionChanged="ReloadExpensesViewer" >
+            <ListBox Name="ListOfExpenseListViewer" Background="#FF2E2D2D" BorderThickness="0" SelectionChanged="ReloadExpensesViewer" >
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:ExpenseList}">
                         <TextBlock Text="{Binding Name}" FontSize="14" Margin="8,3" Foreground="#FFC8C8C8"></TextBlock>
@@ -148,24 +148,24 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="ExpenseList_Name" FontSize="16" Margin="25,0,7,0" VerticalAlignment="Center">Hello</TextBlock>
-                        <TextBlock x:Name="ExpenseList_TotalExpense" Grid.Column="1" VerticalAlignment="Center" FontSize="16" FontWeight="Bold">100 000 đ</TextBlock>
-                        <Button x:Name="CreatingNewExpenseBtn" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource BlueButtonStyle}" Margin="15,0">Add new expense</Button>
-                        <StackPanel x:Name="CreatingNewExpensePanel2" Orientation="Horizontal" Grid.Column="2" Margin="15,0" VerticalAlignment="Center" Visibility="Collapsed">
-                            <Button Margin="5" Style="{StaticResource BlueButtonStyle}" Click="AddNewExpenseList" Width="60">Add</Button>
-                            <Button Margin="5" Style="{StaticResource RedButtonStyle}" Click="CancelAddingNewExpenseList" Width="60">Cancel</Button>
+                        <TextBlock Name="ExpenseList_Name" FontSize="16" Margin="25,0,7,0" VerticalAlignment="Center"></TextBlock>
+                        <TextBlock Name="ExpenseList_TotalExpense" Grid.Column="1" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
+                        <Button Name="CreatingNewExpenseBtn" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource BlueButtonStyle}" Margin="15,0" Click="CreatingExpenseButton_Click">Add new expense</Button>
+                        <StackPanel Name="CreatingNewExpensePanel2" Orientation="Horizontal" Grid.Column="2" Margin="15,0" VerticalAlignment="Center" Visibility="Collapsed">
+                            <Button Margin="5" Style="{StaticResource BlueButtonStyle}" Width="60" Click="AddNewExpense">Save</Button>
+                            <Button Margin="5" Style="{StaticResource RedButtonStyle}" Width="60" Click="CancelAddingNewExpense">Cancel</Button>
                         </StackPanel>
                     </Grid>
-                    <StackPanel x:Name="CreatingNewExpensePanel" Orientation="Horizontal" Visibility="Collapsed">
+                    <StackPanel Name="CreatingNewExpensePanel" Orientation="Horizontal" Visibility="Collapsed">
                         <TextBlock VerticalAlignment="Center" FontSize="14" Margin="15,0,0,0" FontWeight="Bold">Item:</TextBlock>
-                        <TextBox Margin="8,3" FontSize="14" Padding="8,3" VerticalAlignment="Center" BorderThickness="1" Width="180" Template="{StaticResource TextBoxStyle}">
+                        <TextBox Name="NewExpense_Item" Margin="8,3" FontSize="14" Padding="8,3" VerticalAlignment="Center" BorderThickness="1" Width="180" Template="{StaticResource TextBoxStyle}">
                         </TextBox>
                         <TextBlock VerticalAlignment="Center" FontSize="14" Margin="5,0,0,0" FontWeight="Bold">Price:</TextBlock>
-                        <TextBox Margin="8,3" FontSize="14" Padding="3,3" Text="1000000" VerticalAlignment="Center" BorderThickness="1" Width="80" Template="{StaticResource TextBoxStyle}">
+                        <TextBox Name="NewExpense_Price" Margin="8,3" FontSize="14" Padding="3,3" Text="1000000" VerticalAlignment="Center" BorderThickness="1" Width="80" Template="{StaticResource TextBoxStyle}">
                         </TextBox>
                         <TextBlock VerticalAlignment="Center" FontSize="14" Margin="-4,0,0,0">.000 VND</TextBlock>
                         <TextBlock VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0" FontWeight="Bold">Time:</TextBlock>
-                        <TextBox Margin="8,3" FontSize="14" Padding="3,3" Text="15:30 28/05/2020" VerticalAlignment="Center" BorderThickness="1" Width="140" Template="{StaticResource TextBoxStyle}">
+                        <TextBox Name="NewExpense_Time" Margin="8,3" FontSize="14" Padding="3,3" VerticalAlignment="Center" BorderThickness="1" Width="140" Template="{StaticResource TextBoxStyle}">
                         </TextBox>
                     </StackPanel>
                     <Grid Margin="40,7,0,3" TextBlock.FontSize="14" TextBlock.FontStyle="Italic">
@@ -173,6 +173,7 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="150"></ColumnDefinition>
                             <ColumnDefinition Width="130"></ColumnDefinition>
+                            <ColumnDefinition Width="80"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock TextAlignment="Left">Item</TextBlock>
                         <TextBlock TextAlignment="Right" Grid.Column="1" Margin="0,0,25,0">Price</TextBlock>
@@ -181,7 +182,7 @@
                 </StackPanel>
             </Border>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl x:Name="Expenses">
+                <ItemsControl Name="ExpensesViewer">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type local:Expense}">
                             <Grid Margin="40,5,0,5" TextBlock.FontSize="14">
@@ -189,23 +190,29 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="150"></ColumnDefinition>
                                     <ColumnDefinition Width="130"></ColumnDefinition>
+                                    <ColumnDefinition Width="80"></ColumnDefinition>
+                                    
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Item}"></TextBlock>
-                                <TextBlock Grid.Column="1" FontFamily="Consolas" FontWeight="Bold" Text="{Binding Price, Converter={StaticResource CurrencyConverter}}" 
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Item}"></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Grid.Column="1" FontFamily="Consolas" FontWeight="Bold" Text="{Binding Price, Converter={StaticResource CurrencyConverter}}" 
                                            Margin="0,0,20,0" TextAlignment="Right"></TextBlock>
-                                <TextBlock Grid.Column="2" Text="{Binding Time, Converter={StaticResource DateTimeDisplayConverter}}"
+                                <TextBlock VerticalAlignment="Center" Grid.Column="2" Text="{Binding Time, Converter={StaticResource DateTimeDisplayConverter}}"
                                            Margin="0,0,15,0" TextAlignment="Right"></TextBlock>
+                                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                    <Button FontFamily="Material Icons" Style="{StaticResource BlueButtonStyle}" Click="EditExpense">edit</Button>
+                                    <Button FontFamily="Material Icons" Style="{StaticResource RedButtonStyle}" Margin="8,0,0,0" Click="RemoveExpense">clear</Button>
+                                </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsSource>
+                    <!--<ItemsControl.ItemsSource>
                         <CompositeCollection>
                             <local:Expense Time="2010-06-01T00:00:00" Item="Hello" Price="1235"></local:Expense>
                             <local:Expense Time="2010-06-01T15:00:00" Item="Hello1" Price="12355"></local:Expense>
                             <local:Expense Time="2010-06-01T00:10:00" Item="Hello2" Price="12"></local:Expense>
                             <local:Expense Time="2010-06-01T15:00:00" Item="Hello3" Price="12355000"></local:Expense>
                         </CompositeCollection>
-                    </ItemsControl.ItemsSource>
+                    </ItemsControl.ItemsSource>-->
                 </ItemsControl>
             </ScrollViewer>
         </DockPanel>
