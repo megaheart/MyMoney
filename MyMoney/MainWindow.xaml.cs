@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace MyMoney
 {
@@ -29,7 +30,7 @@ namespace MyMoney
         ObservableCollection<Expense> Expenses;
         IntToVNDCurrency currencyConverter = new IntToVNDCurrency();
         DateTimeToString dateTimeDisplay = new DateTimeToString();
-        int totalExpense;
+        int totalExpense = 0;
         bool doesUserClick = false;
         public MainWindow()
         {
@@ -117,6 +118,119 @@ namespace MyMoney
             CreatingNewExpensePanel2.Visibility = Visibility.Visible;
             CreatingNewExpensePanel.Visibility = Visibility.Visible;
         }
+        private static bool IsNumber(char c) { int x = c - '0'; return x > -1 && x < 10; }
+        private static bool TryParseDateTime1(string s, out DateTime o)
+        {
+            s = s.Trim();
+            int[] colon_dot_dot_Position = new int[] { -1, -1, -1 };
+            int dot_nth = 1;
+            int i = 0;
+            int[] num = new int[2];
+            while (i < s.Length)
+            {
+                if (s[i] == ':')
+                {
+                    colon_dot_dot_Position[0] = i;
+                    i++;
+                    int num_nth = 0;
+                    string a = "";
+                    while (i < s.Length)
+                    {
+                        if (IsNumber(s[i]))
+                        {
+                            if (num_nth > 1) { o = new DateTime(); return false; }
+                            a += s[i];
+                        }
+                        else if (s[i] == ' ')
+                        {
+                            if (a != "")
+                            {
+                                num[num_nth] = int.Parse(a);
+                                a = "";
+                                num_nth++;
+                            }
+                        }
+                        else if (s[i] == '/')
+                        {
+                            if (a != "")
+                            {
+                                num[num_nth] = int.Parse(a);
+                                a = "";
+                                num_nth++;
+                            }
+                            if (num_nth < 2) { o = new DateTime(); return false; }
+                            break;
+                        }
+                        else { o = new DateTime(); return false; }
+                        i++;
+                    }
+                    if (i == s.Length)
+                    {
+                        if (a != "")
+                        {
+                            num[num_nth] = int.Parse(a);
+                            a = "";
+                            num_nth++;
+                        }
+                        if (num_nth > 1) { o = new DateTime(); return false; }
+                        int x;
+                        if (int.TryParse(s.Substring(0, colon_dot_dot_Position[0]).Trim(), out x))
+                        {
+                            if (x > 23 || x < 0) { o = new DateTime(); return false; }
+                            if (num[0] > 59 || num[0] < 0) { o = new DateTime(); return false; }
+                            o = DateTime.Now.Date.AddHours(x).AddMinutes(num[0]);
+                            return true;
+                        }
+                    }
+                }
+                else if (s[i] == '/')
+                {
+                    if (dot_nth > 2) { o = new DateTime(); return false; }
+                    colon_dot_dot_Position[dot_nth] = i;
+                    dot_nth++;
+                    i++;
+                }
+                else i++;
+            }
+            if (colon_dot_dot_Position[0] == -1)
+            {
+                int day, month, year;
+                if (!int.TryParse(s.Substring(0, colon_dot_dot_Position[1]).Trim(), out day)) { o = new DateTime(); return false; }
+                if (!int.TryParse(s.Substring(colon_dot_dot_Position[1] + 1, colon_dot_dot_Position[2] - colon_dot_dot_Position[1] - 1).Trim(), out month))
+                { o = new DateTime(); return false; }
+                if (!int.TryParse(s.Substring(colon_dot_dot_Position[2] + 1, s.Length - colon_dot_dot_Position[2] - 1).Trim(), out year))
+                { o = new DateTime(); return false; }
+                try
+                {
+                    o = new DateTime(year, month, day);
+                }
+                catch (Exception)
+                {
+                    o = new DateTime();
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                int month, year, hour;
+                if (!int.TryParse(s.Substring(0, colon_dot_dot_Position[0]).Trim(), out hour)) { o = new DateTime(); return false; }
+                if (!int.TryParse(s.Substring(colon_dot_dot_Position[1] + 1, colon_dot_dot_Position[2] - colon_dot_dot_Position[1] - 1).Trim(), out month))
+                { o = new DateTime(); return false; }
+                if (!int.TryParse(s.Substring(colon_dot_dot_Position[2] + 1, s.Length - colon_dot_dot_Position[2] - 1).Trim(), out year))
+                { o = new DateTime(); return false; }
+                try
+                {
+                    o = new DateTime(year, month, num[1], hour, num[0], 0);
+                }
+                catch (Exception)
+                {
+                    o = new DateTime();
+                    return false;
+                }
+                return true;
+            }
+        }
         private Expense ExpenseNeedUpdating = null;
         private void AddNewExpense(object sender, RoutedEventArgs e)
         {
@@ -136,11 +250,11 @@ namespace MyMoney
             if (time == "") expenseTime = DateTime.Now;
             else
             {
-                if (DateTime.TryParse(NewExpense_Time.Text, out expenseTime))
+                if (TryParseDateTime1(NewExpense_Time.Text, out expenseTime))
                 {
                     
                 }
-                else if (DateTime.TryParseExact(NewExpense_Time.Text.Trim(), new string[] { "H:m d/M/yyyy", "HH:mm dd/MM/yyyy" }, null, DateTimeStyles.None, out expenseTime))
+                else if (DateTime.TryParse(NewExpense_Time.Text, out expenseTime))
                 {
                     
                 }
@@ -162,6 +276,7 @@ namespace MyMoney
             else
             {
                 var x = myContext.Expenses.Where(e => e.Id == ExpenseNeedUpdating.Id);
+                var oldPrice = ExpenseNeedUpdating.Price;
                 if(x.Count() != 0)
                 {
                     var eX = x.First();
@@ -169,7 +284,8 @@ namespace MyMoney
                     eX.Price = price;
                     eX.Time = expenseTime;
                     myContext.SaveChangesAsync();
-                    totalExpense += eX.Price - ExpenseNeedUpdating.Price;
+                    myContext.Entry(eX).State = EntityState.Detached;
+                    totalExpense += eX.Price - oldPrice;
                     ExpenseNeedUpdating.Item = NewExpense_Item.Text;
                     ExpenseNeedUpdating.Price = price;
                     ExpenseNeedUpdating.Time = expenseTime;
