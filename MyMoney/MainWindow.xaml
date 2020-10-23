@@ -218,7 +218,7 @@
 
                             <sys:String>Book(s)</sys:String>
                             <sys:String>Cooking Material</sys:String>
-                            <sys:String>Food Eaten Out</sys:String>
+                            <sys:String>Street Food</sys:String>
                             <sys:String>Appliance(s)</sys:String>
                             <sys:String>Others</sys:String>
                         </ComboBox>

@@ -33,7 +33,7 @@ namespace MyMoney.Controllers
             },
             new TotalExpenseOfAType()
             {
-                Name = "Food Eaten Out",
+                Name = "Street Food",
                 Value = 0
             },
             new TotalExpenseOfAType()

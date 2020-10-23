@@ -228,7 +228,7 @@ namespace MyMoney
                 case 2:
                     return "Cooking Material";
                 case 3:
-                    return "Food Eaten Out";
+                    return "Street Food";
                 case 4:
                     return "Appliance(s)";
                 default:
