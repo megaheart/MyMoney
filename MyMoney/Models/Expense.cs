@@ -5,8 +5,29 @@ using System.Text;
 
 namespace MyMoney
 {
+    public enum ExpenseType
+    {
+        Other = 0,
+        Book = 1,
+        CookingMaterial = 2,
+        FoodEatenOut = 3,
+        Appliances = 4
+    }
     public class Expense:NotifiableObject
     {
+        private ExpenseType expenseType;
+        public ExpenseType ExpenseType
+        {
+            get => expenseType;
+            set
+            {
+                if(value != expenseType)
+                {
+                    expenseType = value;
+                    OnPropertyChanged("ExpenseType");
+                }
+            }
+        }
         private string _item;
         public string Item
         {
