@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using MyMoney.Models;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MyMoney.Controllers
 {
@@ -14,7 +16,7 @@ namespace MyMoney.Controllers
         private MyContext myContext;
         public ObservableCollection<Expense> Expenses;
         private int totalExpense;
-        public readonly TotalExpenseOfAType[] totalExpenseOfAllTypes = new TotalExpenseOfAType[]
+        public static readonly TotalExpenseOfAType[] totalExpenseOfAllTypes = new TotalExpenseOfAType[]
         {
             new TotalExpenseOfAType()
             {
@@ -41,16 +43,34 @@ namespace MyMoney.Controllers
                 Name = "Appliance(s)",
                 Value = 0
             },
+            new TotalExpenseOfAType()
+            {
+                Name = "Service(s)",
+                Value = 0
+            },
+            new TotalExpenseOfAType()
+            {
+                Name = "Transportation",
+                Value = 0
+            },
         };
         public int TotalExpense { get => totalExpense; }
         public ExpensesManager(MyContext context)
         {
             myContext = context;
         }
+        class ExpenseComparer : IComparer<Expense>
+        {
+            public int Compare([AllowNull] Expense x, [AllowNull] Expense y)
+            {
+                if (x == null || y == null) throw new Exception();
+                return y.Time.CompareTo(x.Time);
+            }
+        }
         public void Initialize(int expenseListId)
         {
             var _expenses = myContext.Expenses.Where(e => e.ExpenseListId == expenseListId).AsNoTracking().ToList();
-            _expenses.Reverse();
+            _expenses.Sort(new ExpenseComparer());
             Expenses = new ObservableCollection<Expense>(_expenses);
             totalExpense = 0;
             for (var i = 0; i < totalExpenseOfAllTypes.Length; i++)
@@ -76,7 +96,12 @@ namespace MyMoney.Controllers
             var eX = new Expense() { Item = itemName, Id = 0, ExpenseListId = expenseListId, Price = price, Time = expenseTime, ExpenseType=(ExpenseType)expenseTypeIndex };
             myContext.Expenses.Add(eX);
             myContext.SaveChangesAsync();
-            Expenses.Insert(0, eX);
+            int i = 0;
+            while(eX.Time < Expenses[i].Time)
+            {
+                i++;
+            }
+            Expenses.Insert(i, eX);
             totalExpense += eX.Price;
             totalExpenseOfAllTypes[(int)eX.ExpenseType].Value += eX.Price;
             return null;
@@ -112,7 +137,18 @@ namespace MyMoney.Controllers
                 expenseNeedUpdating.Price = price;
                 expenseNeedUpdating.Time = expenseTime;
                 expenseNeedUpdating.ExpenseType = eX.ExpenseType;
-
+                int oldI = Expenses.IndexOf(expenseNeedUpdating);
+                if (oldI > 0 && expenseNeedUpdating.Time == Expenses[oldI - 1].Time) return null;
+                int i = 0;
+                bool isBehindOldIndex = false;
+                while (expenseNeedUpdating.Time < Expenses[i].Time || expenseNeedUpdating == Expenses[i])
+                {
+                    if (expenseNeedUpdating == Expenses[i]) isBehindOldIndex = true;
+                    i++;
+                }
+                if (i > 0 && expenseNeedUpdating == Expenses[i - 1]) return null;
+                if(isBehindOldIndex) Expenses.Move(oldI, i - 1); 
+                else Expenses.Move(oldI, i);
             }
             return null;
         }

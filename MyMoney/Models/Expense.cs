@@ -10,8 +10,10 @@ namespace MyMoney
         Other = 0,
         Book = 1,
         CookingMaterial = 2,
-        FoodEatenOut = 3,
-        Appliances = 4
+        StreetFood = 3,
+        Appliance = 4,
+        Service = 5,
+        Tranportation = 6
     }
     public class Expense:NotifiableObject
     {
@@ -62,7 +64,7 @@ namespace MyMoney
                 if (value != _time)
                 {
                     _time = value;
-                    OnPropertyChanged("CreatedDate");
+                    OnPropertyChanged("Time");
                 }
             }
             get => _time;

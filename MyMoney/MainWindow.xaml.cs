@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MyMoney.Controllers;
+using MyMoney.Models;
 
 namespace MyMoney
 {
@@ -43,7 +44,7 @@ namespace MyMoney
             ExpenseLists = ExpenseListManager.ExpenseLists;
             ListOfExpenseListViewer.ItemsSource = ExpenseLists;
             var ExpenseListIdToOpen = Cookie.GetCookie(myContext, "ExpenseListIdToOpen");
-            if(ExpenseListIdToOpen == "")
+            if (ExpenseListIdToOpen == "")
             {
                 ListOfExpenseListViewer.SelectedIndex = 0;
             }
@@ -51,14 +52,23 @@ namespace MyMoney
             {
                 int expectId = int.Parse(ExpenseListIdToOpen);
                 int index = 0;
-                while(index < ExpenseLists.Count)
+                while (index < ExpenseLists.Count)
                 {
                     if (ExpenseLists[index].Id == expectId) break;
                     index++;
                 }
-                ListOfExpenseListViewer.SelectedIndex = index == ExpenseLists.Count? 0 : index;
+                ListOfExpenseListViewer.SelectedIndex = index == ExpenseLists.Count ? 0 : index;
             }
-            TotalExpenseOfAllTypeViewer.ItemsSource = ExpensesManager.totalExpenseOfAllTypes;
+            var list = new TotalExpenseOfAType[ExpensesManager.totalExpenseOfAllTypes.Length];
+            list[list.Length - 1] = ExpensesManager.totalExpenseOfAllTypes[0];
+            Array.Copy(ExpensesManager.totalExpenseOfAllTypes, 1, list, 0, list.Length - 1);
+            TotalExpenseOfAllTypeViewer.ItemsSource = list;
+            NewExpense_Type.ItemsSource = list.Select(t =>
+            {
+                var index = t.Name.IndexOf('(');
+                if (index > -1) return t.Name.Remove(index).Trim();
+                return t.Name.Trim();
+            });
             //doesUserClick = true;
         }
         private void CreatingButton_Click(object sender, RoutedEventArgs e)
@@ -83,7 +93,7 @@ namespace MyMoney
 
         private void ReloadExpensesViewer(object sender, SelectionChangedEventArgs e)
         {
-            if(ListOfExpenseListViewer.SelectedIndex == -1)
+            if (ListOfExpenseListViewer.SelectedIndex == -1)
             {
                 ExpenseList_Name.Text = "";
                 ExpenseList_TotalExpense.Text = "";
@@ -111,7 +121,7 @@ namespace MyMoney
             CreatingNewExpensePanel2.Visibility = Visibility.Visible;
             CreatingNewExpensePanel.Visibility = Visibility.Visible;
         }
-        
+
         private Expense ExpenseNeedUpdating = null;
         private void AddNewExpense(object sender, RoutedEventArgs e)
         {
@@ -129,7 +139,7 @@ namespace MyMoney
             int expenseTypeIndex = NewExpense_Type.SelectedIndex;
             if (expenseTypeIndex == NewExpense_Type.Items.Count - 1) expenseTypeIndex = 0;
             else expenseTypeIndex++;
-            if(ExpenseNeedUpdating == null)
+            if (ExpenseNeedUpdating == null)
             {
                 Exception exception = ExpensesManager.Add(NewExpense_Item.Text, ExpenseLists[ListOfExpenseListViewer.SelectedIndex].Id, price, NewExpense_Time.Text, expenseTypeIndex);
                 if (exception != null) MessageBox.Show(exception.Message);
@@ -155,7 +165,7 @@ namespace MyMoney
         private void RemoveExpense(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("This expense will be deleted. Are you sure!", "Deleting Warning", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            if(result == MessageBoxResult.OK)
+            if (result == MessageBoxResult.OK)
             {
                 Button button = sender as Button;
                 ExpensesManager.Remove(button.DataContext as Expense);
@@ -169,13 +179,14 @@ namespace MyMoney
             NewExpense_Item.Text = ExpenseNeedUpdating.Item;
             NewExpense_Price.Text = ExpenseNeedUpdating.Price.ToString();
             NewExpense_Time.Text = dateTimeDisplay.Convert(ExpenseNeedUpdating.Time, null, null, null).ToString();
-            int index = (int) ExpenseNeedUpdating.ExpenseType;
+            int index = (int)ExpenseNeedUpdating.ExpenseType;
             if (index == 0) NewExpense_Type.SelectedIndex = NewExpense_Type.Items.Count - 1;
             else NewExpense_Type.SelectedIndex = index - 1;
             CreatingNewExpenseBtn.Visibility = Visibility.Collapsed;
             CreatingNewExpensePanel2.Visibility = Visibility.Visible;
             CreatingNewExpensePanel.Visibility = Visibility.Visible;
         }
+
 
     }
     public class IntToVNDCurrency : IValueConverter
@@ -221,19 +232,7 @@ namespace MyMoney
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            switch((int)value)
-            {
-                case 1:
-                    return "Book(s)";
-                case 2:
-                    return "Cooking Material";
-                case 3:
-                    return "Street Food";
-                case 4:
-                    return "Appliance(s)";
-                default:
-                    return "Others";
-            }
+            return ExpensesManager.totalExpenseOfAllTypes[(int)value].Name;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

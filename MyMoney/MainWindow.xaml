@@ -215,12 +215,6 @@
                         </TextBox>
                         <TextBlock Grid.Column="3" VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0" FontWeight="Bold">Type:</TextBlock>
                         <ComboBox Grid.Column="3" Grid.Row="1" Name="NewExpense_Type" Margin="8,3" FontSize="14" Padding="3,3" VerticalAlignment="Center" BorderThickness="1">
-
-                            <sys:String>Book(s)</sys:String>
-                            <sys:String>Cooking Material</sys:String>
-                            <sys:String>Street Food</sys:String>
-                            <sys:String>Appliance(s)</sys:String>
-                            <sys:String>Others</sys:String>
                         </ComboBox>
                     </Grid>
                     <Grid Margin="40,7,0,3" TextBlock.FontSize="14" TextBlock.FontStyle="Italic">
