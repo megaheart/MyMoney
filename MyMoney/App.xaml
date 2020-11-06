@@ -16,6 +16,109 @@
         <SolidColorBrush x:Key="Green" Color="#2c902b"></SolidColorBrush>
         <SolidColorBrush x:Key="LightGreen" Color="#319d2f"></SolidColorBrush>
         <SolidColorBrush x:Key="DarkGreen" Color="#2b8929"></SolidColorBrush>
-        
+
+        <local:IntToVNDCurrency x:Key="CurrencyConverter"></local:IntToVNDCurrency>
+        <local:DateTimeToString x:Key="DateTimeDisplayConverter"></local:DateTimeToString>
+        <local:ExpenseTypeEnumToString x:Key="ExpenseTypeDisplayConverter"></local:ExpenseTypeEnumToString>
+
+        <Style TargetType="{x:Type Button}" x:Key="BlueButtonStyle">
+            <Setter Property="SnapsToDevicePixels" Value="True"></Setter>
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Padding" Value="8,7"></Setter>
+            <Setter Property="FontSize" Value="14"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ButtonBase">
+                        <Border CornerRadius="2" Padding="{TemplateBinding Padding}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Name="border" BorderThickness="0" Background="{StaticResource Blue}">
+                            <Border.RenderTransform>
+                                <TranslateTransform x:Name="transform" Y="0"></TranslateTransform>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="shadow" Direction="270" BlurRadius="2" ShadowDepth="3" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"></ContentPresenter>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource LightBlue}"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation To="2" Duration="0:0:0.1" Storyboard.TargetName="transform" Storyboard.TargetProperty="Y"></DoubleAnimation>
+                                            <DoubleAnimation To="0" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="BlurRadius"></DoubleAnimation>
+                                            <DoubleAnimation To="0" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="ShadowDepth"></DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation To="0" Duration="0:0:0.1" Storyboard.TargetName="transform" Storyboard.TargetProperty="Y"></DoubleAnimation>
+                                            <DoubleAnimation To="2" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="BlurRadius"></DoubleAnimation>
+                                            <DoubleAnimation To="3" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="ShadowDepth"></DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="RedButtonStyle">
+            <Setter Property="SnapsToDevicePixels" Value="True"></Setter>
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Padding" Value="8,7"></Setter>
+            <Setter Property="FontSize" Value="14"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ButtonBase">
+                        <Border CornerRadius="2" Padding="{TemplateBinding Padding}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Name="border" BorderThickness="0" Background="{StaticResource Red}">
+                            <Border.RenderTransform>
+                                <TranslateTransform x:Name="transform" Y="0"></TranslateTransform>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="shadow" Direction="270" BlurRadius="2" ShadowDepth="3" Opacity="0.3"/>
+                            </Border.Effect>
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"></ContentPresenter>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource DarkRed}"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation To="2" Duration="0:0:0.1" Storyboard.TargetName="transform" Storyboard.TargetProperty="Y"></DoubleAnimation>
+                                            <DoubleAnimation To="0" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="BlurRadius"></DoubleAnimation>
+                                            <DoubleAnimation To="0" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="ShadowDepth"></DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation To="0" Duration="0:0:0.1" Storyboard.TargetName="transform" Storyboard.TargetProperty="Y"></DoubleAnimation>
+                                            <DoubleAnimation To="2" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="BlurRadius"></DoubleAnimation>
+                                            <DoubleAnimation To="3" Duration="0:0:0.1" Storyboard.TargetName="shadow" Storyboard.TargetProperty="ShadowDepth"></DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate TargetType="TextBox" x:Key="TextBoxStyle">
+            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="PART_ContentHost"></ScrollViewer>
+            </Border>
+        </ControlTemplate>
     </Application.Resources>
 </Application>

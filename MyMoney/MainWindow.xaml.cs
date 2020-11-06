@@ -28,10 +28,9 @@ namespace MyMoney
     public partial class MainWindow : Window
     {
         MyContext myContext = new MyContext();
-        IntToVNDCurrency currencyConverter = new IntToVNDCurrency();
-        DateTimeToString dateTimeDisplay = new DateTimeToString();
+        
         ObservableCollection<ExpenseList> ExpenseLists;
-        ObservableCollection<Expense> Expenses { get => ExpensesManager.Expenses; }
+        
         ExpenseListManager ExpenseListManager;
         ExpensesManager ExpensesManager;
         //bool doesUserClick = false;
@@ -42,6 +41,8 @@ namespace MyMoney
             ExpenseListManager = new ExpenseListManager(myContext);
             ExpenseListManager.Initialize();
             ExpenseLists = ExpenseListManager.ExpenseLists;
+            ExpenseList_Viewer.ExpensesManager = ExpensesManager;
+            ExpenseList_Viewer.myContext = myContext;
             ListOfExpenseListViewer.ItemsSource = ExpenseLists;
             var ExpenseListIdToOpen = Cookie.GetCookie(myContext, "ExpenseListIdToOpen");
             if (ExpenseListIdToOpen == "")
@@ -59,16 +60,7 @@ namespace MyMoney
                 }
                 ListOfExpenseListViewer.SelectedIndex = index == ExpenseLists.Count ? 0 : index;
             }
-            var list = new TotalExpenseOfAType[ExpensesManager.totalExpenseOfAllTypes.Length];
-            list[list.Length - 1] = ExpensesManager.totalExpenseOfAllTypes[0];
-            Array.Copy(ExpensesManager.totalExpenseOfAllTypes, 1, list, 0, list.Length - 1);
-            TotalExpenseOfAllTypeViewer.ItemsSource = list;
-            NewExpense_Type.ItemsSource = list.Select(t =>
-            {
-                var index = t.Name.IndexOf('(');
-                if (index > -1) return t.Name.Remove(index).Trim();
-                return t.Name.Trim();
-            });
+
             //doesUserClick = true;
         }
         private void CreatingButton_Click(object sender, RoutedEventArgs e)
@@ -95,97 +87,16 @@ namespace MyMoney
         {
             if (ListOfExpenseListViewer.SelectedIndex == -1)
             {
-                ExpenseList_Name.Text = "";
-                ExpenseList_TotalExpense.Text = "";
-                ExpensesViewer.ItemsSource = null;
-                //ExpenseManager.ClearCache();
+                
             }
             else
             {
                 var expenseList = ExpenseLists[ListOfExpenseListViewer.SelectedIndex];
-                ExpenseList_Name.Text = expenseList.Name;
-                ExpensesManager.Initialize(expenseList.Id);
-                ExpensesViewer.ItemsSource = Expenses;
-                ExpenseList_TotalExpense.Text = currencyConverter.Convert(ExpensesManager.TotalExpense, null, null, null).ToString();
+                ExpenseList_Viewer.ExpenseList = expenseList;
                 Cookie.SetCookie(myContext, "ExpenseListIdToOpen", ListOfExpenseListViewer.SelectedIndex.ToString());
             }
         }
-        private void CreatingExpenseButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ListOfExpenseListViewer.SelectedIndex == -1) return;
-            NewExpense_Item.Text = "";
-            NewExpense_Price.Text = "";
-            NewExpense_Time.Text = "";
-            NewExpense_Type.SelectedIndex = NewExpense_Type.Items.Count - 1;
-            CreatingNewExpenseBtn.Visibility = Visibility.Collapsed;
-            CreatingNewExpensePanel2.Visibility = Visibility.Visible;
-            CreatingNewExpensePanel.Visibility = Visibility.Visible;
-        }
-
-        private Expense ExpenseNeedUpdating = null;
-        private void AddNewExpense(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(NewExpense_Item.Text))
-            {
-                MessageBox.Show("Title Of New Expense cannot be empty.");
-                return;
-            }
-            int price;
-            if (!int.TryParse(NewExpense_Price.Text.Trim(), out price))
-            {
-                MessageBox.Show("Price Of New Expense cannot be empty and must be number.");
-                return;
-            }
-            int expenseTypeIndex = NewExpense_Type.SelectedIndex;
-            if (expenseTypeIndex == NewExpense_Type.Items.Count - 1) expenseTypeIndex = 0;
-            else expenseTypeIndex++;
-            if (ExpenseNeedUpdating == null)
-            {
-                Exception exception = ExpensesManager.Add(NewExpense_Item.Text, ExpenseLists[ListOfExpenseListViewer.SelectedIndex].Id, price, NewExpense_Time.Text, expenseTypeIndex);
-                if (exception != null) MessageBox.Show(exception.Message);
-                ExpenseList_TotalExpense.Text = currencyConverter.Convert(ExpensesManager.TotalExpense, null, null, null).ToString();
-            }
-            else
-            {
-                Exception exception = ExpensesManager.Update(ExpenseNeedUpdating, NewExpense_Item.Text, price, NewExpense_Time.Text, expenseTypeIndex);
-                if (exception != null) MessageBox.Show(exception.Message);
-                ExpenseList_TotalExpense.Text = currencyConverter.Convert(ExpensesManager.TotalExpense, null, null, null).ToString();
-                ExpenseNeedUpdating = null;
-            }
-            CreatingNewExpenseBtn.Visibility = Visibility.Visible;
-            CreatingNewExpensePanel2.Visibility = Visibility.Collapsed;
-            CreatingNewExpensePanel.Visibility = Visibility.Collapsed;
-        }
-        private void CancelAddingNewExpense(object sender, RoutedEventArgs e)
-        {
-            CreatingNewExpenseBtn.Visibility = Visibility.Visible;
-            CreatingNewExpensePanel2.Visibility = Visibility.Collapsed;
-            CreatingNewExpensePanel.Visibility = Visibility.Collapsed;
-        }
-        private void RemoveExpense(object sender, RoutedEventArgs e)
-        {
-            var result = MessageBox.Show("This expense will be deleted. Are you sure!", "Deleting Warning", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.OK)
-            {
-                Button button = sender as Button;
-                ExpensesManager.Remove(button.DataContext as Expense);
-                ExpenseList_TotalExpense.Text = currencyConverter.Convert(ExpensesManager.TotalExpense, null, null, null).ToString();
-            }
-        }
-        private void EditExpense(object sender, RoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            ExpenseNeedUpdating = button.DataContext as Expense;
-            NewExpense_Item.Text = ExpenseNeedUpdating.Item;
-            NewExpense_Price.Text = ExpenseNeedUpdating.Price.ToString();
-            NewExpense_Time.Text = dateTimeDisplay.Convert(ExpenseNeedUpdating.Time, null, null, null).ToString();
-            int index = (int)ExpenseNeedUpdating.ExpenseType;
-            if (index == 0) NewExpense_Type.SelectedIndex = NewExpense_Type.Items.Count - 1;
-            else NewExpense_Type.SelectedIndex = index - 1;
-            CreatingNewExpenseBtn.Visibility = Visibility.Collapsed;
-            CreatingNewExpensePanel2.Visibility = Visibility.Visible;
-            CreatingNewExpensePanel.Visibility = Visibility.Visible;
-        }
+        
 
 
     }
