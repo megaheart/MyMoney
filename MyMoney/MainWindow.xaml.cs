@@ -27,24 +27,18 @@ namespace MyMoney
     /// </summary>
     public partial class MainWindow : Window
     {
-        MyContext myContext = new MyContext();
-        
         ObservableCollection<ExpenseList> ExpenseLists;
-        
         ExpenseListManager ExpenseListManager;
         ExpensesManager ExpensesManager;
         //bool doesUserClick = false;
         public MainWindow()
         {
             InitializeComponent();
-            ExpensesManager = new ExpensesManager(myContext);
-            ExpenseListManager = new ExpenseListManager(myContext);
-            ExpenseListManager.Initialize();
+            ExpensesManager = ExpensesManager.GetExpensesManagerForMainThread();
+            ExpenseListManager = ExpenseListManager.GetExpenseListManagerForMainThread();
             ExpenseLists = ExpenseListManager.ExpenseLists;
-            ExpenseList_Viewer.ExpensesManager = ExpensesManager;
-            ExpenseList_Viewer.myContext = myContext;
             ListOfExpenseListViewer.ItemsSource = ExpenseLists;
-            var ExpenseListIdToOpen = Cookie.GetCookie(myContext, "ExpenseListIdToOpen");
+            var ExpenseListIdToOpen = Cookie.ForMainThread().GetCookie("ExpenseListIdToOpen");
             if (ExpenseListIdToOpen == "")
             {
                 ListOfExpenseListViewer.SelectedIndex = 0;
@@ -60,7 +54,7 @@ namespace MyMoney
                 }
                 ListOfExpenseListViewer.SelectedIndex = index == ExpenseLists.Count ? 0 : index;
             }
-
+            
             //doesUserClick = true;
         }
         private void CreatingButton_Click(object sender, RoutedEventArgs e)
@@ -93,7 +87,7 @@ namespace MyMoney
             {
                 var expenseList = ExpenseLists[ListOfExpenseListViewer.SelectedIndex];
                 ExpenseList_Viewer.ExpenseList = expenseList;
-                Cookie.SetCookie(myContext, "ExpenseListIdToOpen", ListOfExpenseListViewer.SelectedIndex.ToString());
+                Cookie.ForMainThread().SetCookie("ExpenseListIdToOpen", ListOfExpenseListViewer.SelectedIndex.ToString());
             }
         }
         

@@ -1,0 +1,65 @@
+﻿{
+    "Prefixs": [
+        {
+            "Name": "",
+            "Level": 0
+        },
+        {
+            "Name": "m",
+            "Level": -3
+        },
+        {
+            "Name": "c",
+            "Level": -2
+        },
+        {
+            "Name": "k",
+            "Level": 3
+        }
+    ],
+    "Quantities": {
+        "Mass": {
+            "DefaultUnit": {
+                "Name": "g",
+                "Power": 1
+            },
+            "OtherUnits": [
+                {
+                    "Name": "lượng",
+                    "Region": {
+                        "Include": [ "vn" ]
+                    },
+                    "ConversionRatio": 100,
+                    "PrefixAddingEnable": false,
+                    "ValidPrefixs": null,
+                    "Power": 1
+                }
+            ]
+        },
+        "Length": {
+            "DefaultUnit": {
+                "Name": "m",
+                "Power": 1
+            },
+            "OtherUnits": []
+        },
+        "Volume": {
+            "DefaultUnit": {
+                "Name": "㎥",
+                "Power": 3
+            },
+            "OtherUnits": [
+                {
+                    "Name": "l",
+                    "Region": {
+                        "Except": []
+                    },
+                    "ConversionRatio": 0.001,
+                    "PrefixAddingEnable": true,
+                    "ValidPrefixs": [ "", "m" ],
+                    "Power": 1
+                }
+            ]
+        }
+    }
+}

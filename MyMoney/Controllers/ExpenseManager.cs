@@ -13,7 +13,7 @@ namespace MyMoney.Controllers
 {
     public class ExpensesManager
     {
-        private MyContext myContext;
+        private MyContext myContext = new MyContext();
         public ObservableCollection<Expense> Expenses;
         private int totalExpense;
         public static readonly TotalExpenseOfAType[] totalExpenseOfAllTypes = new TotalExpenseOfAType[]
@@ -55,10 +55,19 @@ namespace MyMoney.Controllers
             },
         };
         public int TotalExpense { get => totalExpense; }
-        public ExpensesManager(MyContext context)
+        private static ExpensesManager ExpensesManagerForMainThread = new ExpensesManager();
+        public static ExpensesManager GetExpensesManagerForMainThread()
         {
-            myContext = context;
+            return ExpensesManagerForMainThread;
         }
+        public static ExpensesManager GetExpensesManagerForOtherThread()
+        {
+            return new ExpensesManager();
+        }
+        private ExpensesManager()
+        {
+        }
+        public MyContext GetContext() => myContext;
         class ExpenseComparer : IComparer<Expense>
         {
             public int Compare([AllowNull] Expense x, [AllowNull] Expense y)
@@ -67,8 +76,12 @@ namespace MyMoney.Controllers
                 return y.Time.CompareTo(x.Time);
             }
         }
+        private int _expenseListId = -1;
         public void Initialize(int expenseListId)
         {
+            if (expenseListId == -1) throw new Exception("expenseListId of ExpensesManager.Initialize(int expenseListId) must be natural number.");
+            if (expenseListId == _expenseListId) return;
+            _expenseListId = expenseListId;
             var _expenses = myContext.Expenses.Where(e => e.ExpenseListId == expenseListId).AsNoTracking().ToList();
             _expenses.Sort(new ExpenseComparer());
             Expenses = new ObservableCollection<Expense>(_expenses);
@@ -86,6 +99,7 @@ namespace MyMoney.Controllers
         public void ClearCache()
         {
             Expenses = null;
+            _expenseListId = -1;
             GC.Collect();
         }
         public Exception Add(string itemName, int expenseListId, int price, string time, int expenseTypeIndex)
@@ -97,7 +111,7 @@ namespace MyMoney.Controllers
             myContext.Expenses.Add(eX);
             myContext.SaveChangesAsync();
             int i = 0;
-            while(eX.Time < Expenses[i].Time)
+            while(i < Expenses.Count && eX.Time < Expenses[i].Time)
             {
                 i++;
             }
@@ -143,6 +157,7 @@ namespace MyMoney.Controllers
                 bool isBehindOldIndex = false;
                 while (expenseNeedUpdating.Time < Expenses[i].Time || expenseNeedUpdating == Expenses[i])
                 {
+                    if (i >= Expenses.Count) break;
                     if (expenseNeedUpdating == Expenses[i]) isBehindOldIndex = true;
                     i++;
                 }

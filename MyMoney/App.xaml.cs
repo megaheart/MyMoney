@@ -16,6 +16,8 @@ namespace MyMoney
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            AppSetting appSetting = new AppSetting();
+            appSetting.Setup();
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow window = new MainWindow();
             window.Show();
