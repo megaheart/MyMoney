@@ -107,6 +107,49 @@ namespace MyMoney.Models
                 Id = bsonValueStructureOfExpense.Id
             };
         }
+        public Expense Clone() => new Expense()
+        {
+            _amount = this._amount,
+            _item = this._item,
+            _tags = this._tags,
+            _price = this._price,
+            _time = this._time,
+            Id = this.Id
+        };
+        public void CopyTo(Expense e)
+        {
+            if (e._amount != this._amount)
+            {
+                e._amount = this._amount;
+                e.OnPropertyChanged("Time");
+            }
+            if (e._item != this._item)
+            {
+                e._item = this._item;
+                e.OnPropertyChanged("Time");
+            }
+            if (e._tags != this._tags)
+            {
+                e._tags = this._tags;
+                e.OnPropertyChanged("Time");
+            }
+            if (e._price != this._price)
+            {
+                e._price = this._price;
+                e.OnPropertyChanged("Time");
+            }
+            if (e._time != this._time)
+            {
+                e._time = this._time;
+                e.OnPropertyChanged("Time");
+            }
+            if (e.Id != this.Id)
+            {
+                e.Id = this.Id;
+                e.OnPropertyChanged("Time");
+            }
+        }
+        
     }
 }
-}
+

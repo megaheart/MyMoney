@@ -13,48 +13,9 @@ namespace MyMoney.Controllers
 {
     public class ExpensesManager
     {
-        private MyContext myContext = new MyContext();
         public ObservableCollection<Expense> Expenses;
-        private int totalExpense;
-        public static readonly TotalExpenseOfAType[] totalExpenseOfAllTypes = new TotalExpenseOfAType[]
-        {
-            new TotalExpenseOfAType()
-            {
-                Name = "Others",
-                Value = 0
-            },
-            new TotalExpenseOfAType()
-            {
-                Name = "Book(s)",
-                Value = 0
-            },
-            new TotalExpenseOfAType()
-            {
-                Name = "Cooking Material",
-                Value = 0
-            },
-            new TotalExpenseOfAType()
-            {
-                Name = "Street Food",
-                Value = 0
-            },
-            new TotalExpenseOfAType()
-            {
-                Name = "Appliance(s)",
-                Value = 0
-            },
-            new TotalExpenseOfAType()
-            {
-                Name = "Service(s)",
-                Value = 0
-            },
-            new TotalExpenseOfAType()
-            {
-                Name = "Transportation",
-                Value = 0
-            },
-        };
-        public int TotalExpense { get => totalExpense; }
+        //private int totalExpense;
+        //public int TotalExpense { get => totalExpense; }
         private static ExpensesManager ExpensesManagerForMainThread = new ExpensesManager();
         public static ExpensesManager GetExpensesManagerForMainThread()
         {
@@ -67,41 +28,33 @@ namespace MyMoney.Controllers
         private ExpensesManager()
         {
         }
-        public MyContext GetContext() => myContext;
-        class ExpenseComparer : IComparer<Expense>
-        {
-            public int Compare([AllowNull] Expense x, [AllowNull] Expense y)
-            {
-                if (x == null || y == null) throw new Exception();
-                return y.Time.CompareTo(x.Time);
-            }
-        }
-        private int _expenseListId = -1;
-        public void Initialize(int expenseListId)
-        {
-            if (expenseListId == -1) throw new Exception("expenseListId of ExpensesManager.Initialize(int expenseListId) must be natural number.");
-            if (expenseListId == _expenseListId) return;
-            _expenseListId = expenseListId;
-            var _expenses = myContext.Expenses.Where(e => e.ExpenseListId == expenseListId).AsNoTracking().ToList();
-            _expenses.Sort(new ExpenseComparer());
-            Expenses = new ObservableCollection<Expense>(_expenses);
-            totalExpense = 0;
-            for (var i = 0; i < totalExpenseOfAllTypes.Length; i++)
-            {
-                totalExpenseOfAllTypes[i].Value = 0;
-            }
-            for (var i = 0; i < Expenses.Count; i++)
-            {
-                totalExpense += Expenses[i].Price;
-                totalExpenseOfAllTypes[(int)Expenses[i].ExpenseType].Value += Expenses[i].Price;
-            }
-        }
-        public void ClearCache()
-        {
-            Expenses = null;
-            _expenseListId = -1;
-            GC.Collect();
-        }
+        //class ExpenseComparer : IComparer<Expense>
+        //{
+        //    public int Compare([AllowNull] Expense x, [AllowNull] Expense y)
+        //    {
+        //        if (x == null || y == null) throw new Exception();
+        //        return y.Time.CompareTo(x.Time);
+        //    }
+        //}
+        //public void Initialize(int expenseListId)
+        //{
+        //    if (expenseListId == -1) throw new Exception("expenseListId of ExpensesManager.Initialize(int expenseListId) must be natural number.");
+        //    if (expenseListId == _expenseListId) return;
+        //    _expenseListId = expenseListId;
+        //    var _expenses = myContext.Expenses.Where(e => e.ExpenseListId == expenseListId).AsNoTracking().ToList();
+        //    _expenses.Sort(new ExpenseComparer());
+        //    Expenses = new ObservableCollection<Expense>(_expenses);
+        //    totalExpense = 0;
+        //    for (var i = 0; i < totalExpenseOfAllTypes.Length; i++)
+        //    {
+        //        totalExpenseOfAllTypes[i].Value = 0;
+        //    }
+        //    for (var i = 0; i < Expenses.Count; i++)
+        //    {
+        //        totalExpense += Expenses[i].Price;
+        //        totalExpenseOfAllTypes[(int)Expenses[i].ExpenseType].Value += Expenses[i].Price;
+        //    }
+        //}
         public Exception Add(string itemName, int expenseListId, int price, string time, int expenseTypeIndex)
         {
             DateTime expenseTime;
