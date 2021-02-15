@@ -75,6 +75,7 @@ namespace MyMoney.Models
             get => _time;
         }
         //public int ExpenseListId { set; get; }
+        [BsonId]
         public int Id { set; get; }
         public class BsonValueStructureOfExpense
         {

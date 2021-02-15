@@ -18,7 +18,7 @@ namespace MyMoney
         }
         private void Config()
         {
-            AmountHelper.Initialize(JsonSerializer.Deserialize<unitConfig>(File.ReadAllText(StorageDirection.UnitsConfigFile)));
+            AmountHelper.Initialize(JsonSerializer.Deserialize<unitConfig>(File.ReadAllText(StringResource.UnitsConfigFile)));
             LiteDB.BsonMapper.Global.RegisterType<Amount>(
                 serialize: a => a.Serialize(),
                 deserialize: bson => Amount.Parse(bson.AsString)

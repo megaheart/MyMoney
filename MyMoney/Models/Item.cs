@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,6 +20,7 @@ namespace MyMoney.Models
             }
             get => _name;
         }
+        [BsonId]
         public int Id { set; get; }
     }
 }
