@@ -29,8 +29,8 @@ namespace MyMoney.Models
             {
                 if (value != _color)
                 {
-                    _color = value;
-                    OnPropertyChanged("Name");
+                    _color = string.IsNullOrEmpty(value) ? "#808080" : value;
+                    OnPropertyChanged("Color");
                 }
             }
             get => _color;

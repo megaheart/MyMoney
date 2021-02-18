@@ -23,7 +23,6 @@ namespace MyMoney
                 serialize: a => a.Serialize(),
                 deserialize: bson => Amount.Parse(bson.AsString)
                 );
-
         }
     }
 }

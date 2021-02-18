@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
+using System.Text.Encodings.Web;
+using j = System.Text.Json;
 
 namespace MyMoney.Models
 {
@@ -150,7 +151,19 @@ namespace MyMoney.Models
                 e.OnPropertyChanged("Time");
             }
         }
-        
+        private static JavaScriptEncoder _encoder;
+        public override string ToString()
+        {
+            if (_encoder == null) _encoder = JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All);
+            return "{" + string.Format("\n    Id: {0},\n    Item: {1},\n    Amount: {2},\n    Tags: {3},\n    Price: {4},\n    Time: {5}\n",
+                Id,
+                j.JsonSerializer.Serialize(_item, new j.JsonSerializerOptions() { Encoder = _encoder }),
+                _amount.ToString(),
+                j.JsonSerializer.Serialize(_tags, new j.JsonSerializerOptions() { Encoder = _encoder }),
+                _price,
+                _time) + "}";
+        }
+
     }
 }
 
