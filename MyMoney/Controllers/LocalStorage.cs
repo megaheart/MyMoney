@@ -9,6 +9,7 @@ namespace MyMoney.Controllers
     {
         public static void SetItem<T>(string key, T value)
         {
+            if (key.Length > 30) throw new Exception("Item's key must include less than 31 characters");
             var litedb = new LiteDatabase(StringResource.DatabaseConnection);
             var collection = litedb.GetCollection("localStorage");
             var bson = new BsonDocument()
