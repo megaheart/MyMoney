@@ -27,7 +27,6 @@ namespace MyMoney.Controllers
         {
             var litedb = new LiteDatabase(StringResource.DatabaseConnection);
             var reader = litedb.Execute("SELECT $.Value FROM localStorage WHERE Key='" + key + "' LIMIT 1");
-            BsonValue doc;
             if (reader.Read())
             {
                 value = BsonMapper.Global.Deserialize<T>(reader.Current);
