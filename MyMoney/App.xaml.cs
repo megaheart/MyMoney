@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -21,16 +21,15 @@ namespace MyMoney
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             MainWindow window = new MainWindow();
             window.Show();
-            //MyContext context = new MyContext();
-            //Console.WriteLine("start");
-            //var eX = new Expense() { ExpenseListId = 1, Id = 0, Item = "hello0", Price = 500, Time = DateTime.Now };
-            //context.Expenses.Add(eX);
-            ////var x = context.Expenses
-            ////    .Where(e => true).ForEachAsync(e => Console.WriteLine(e.Price));
-            //Console.WriteLine(eX.Id);
-            //context.SaveChanges();
-            //Console.WriteLine(eX.Id);
-            //Console.WriteLine("end");
+        }
+        public BackgroundWorker RunAsync(DoWorkEventHandler action, ProgressChangedEventHandler progressReport, Action callback)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += action;
+            worker.ProgressChanged += progressReport;
+            worker.RunWorkerCompleted += (sender, e) => { callback(); };
+            worker.RunWorkerAsync();
+            return worker;
         }
     }
 }
