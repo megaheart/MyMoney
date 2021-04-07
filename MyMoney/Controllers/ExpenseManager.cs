@@ -97,7 +97,7 @@ namespace MyMoney.Controllers
             myContext.Expenses.Add(eX);
             myContext.SaveChangesAsync();
             int i = 0;
-            while(eX.Time < Expenses[i].Time)
+            while(i < Expenses.Count && eX.Time < Expenses[i].Time)
             {
                 i++;
             }
@@ -141,7 +141,7 @@ namespace MyMoney.Controllers
                 if (oldI > 0 && expenseNeedUpdating.Time == Expenses[oldI - 1].Time) return null;
                 int i = 0;
                 bool isBehindOldIndex = false;
-                while (expenseNeedUpdating.Time < Expenses[i].Time || expenseNeedUpdating == Expenses[i])
+                while (i < Expenses.Count && (expenseNeedUpdating.Time < Expenses[i].Time || expenseNeedUpdating == Expenses[i]))
                 {
                     if (expenseNeedUpdating == Expenses[i]) isBehindOldIndex = true;
                     i++;
