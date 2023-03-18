@@ -13,7 +13,7 @@ namespace MyMoney
         public DbSet<Cookie> Cookies { set; get; }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source = D:\\Develop_Programs\\MyMoney.db; ");
+            options.UseSqlite("Data Source = C:\\Users\\linh2\\OneDrive - Hanoi University of Science and Technology\\Personal\\Backup for window reinstall\\MyMoney.db; ");
             
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

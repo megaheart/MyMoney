@@ -18,6 +18,8 @@ namespace MyMoney
         }
         public void Initialize()
         {
+            //ExpenseLists = new ObservableCollection<ExpenseList>();
+            //return;
             var lists = myContext.ListOfExpenseList.AsNoTracking().ToList();
             lists.Reverse();
             ExpenseLists = new ObservableCollection<ExpenseList>(lists);
