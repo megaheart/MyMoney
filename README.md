@@ -1,2 +1,2 @@
 # MyMoney
-Help you saving money
+Help you to save money
